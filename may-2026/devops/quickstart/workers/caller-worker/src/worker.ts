@@ -3,8 +3,6 @@ import { Logger, registerWorker } from 'iii-sdk';
 const iii = registerWorker(process.env.III_URL ?? 'ws://localhost:49134');
 const logger = new Logger();
 
-app.get('/health', (req, res) => res.status(200).json({ status: 'ok' }));
-
 iii.registerFunction(
   'inference::get_response',
   async (payload: { messages: Record<string, any> } & Record<string, any>) => {
@@ -23,7 +21,6 @@ iii.registerFunction(
   },
 );
 
-// --- Uncomment after: iii worker add iii-http ---
 iii.registerFunction(
   'http::run_inference_over_http',
   async (payload: { body: { messages: Record<string, any> } & Record<string, any> }) => {
@@ -31,7 +28,7 @@ iii.registerFunction(
       function_id: 'inference::get_response',
       payload: payload.body,
     });
-    logger.info("Running http inference...")
+    logger.info("Running http inference...");
     return {
       status_code: 200,
       body: { result },
@@ -40,10 +37,26 @@ iii.registerFunction(
   },
 );
 
+// Health check endpoint for ALB
+iii.registerFunction(
+  'http::health_check',
+  async () => ({
+    status_code: 200,
+    body: { status: 'ok' },
+    headers: { 'Content-Type': 'application/json' },
+  }),
+);
+
 iii.registerTrigger({
   type: 'http',
   function_id: 'http::run_inference_over_http',
   config: { api_path: '/v1/chat/completions', http_method: 'POST' },
+});
+
+iii.registerTrigger({
+  type: 'http',
+  function_id: 'http::health_check',
+  config: { api_path: '/health', http_method: 'GET' },
 });
 
 logger.info('Caller worker started - listening for calls');
