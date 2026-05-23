@@ -3,6 +3,8 @@ import { Logger, registerWorker } from 'iii-sdk';
 const iii = registerWorker(process.env.III_URL ?? 'ws://localhost:49134');
 const logger = new Logger();
 
+app.get('/health', (req, res) => res.status(200).json({ status: 'ok' }));
+
 iii.registerFunction(
   'inference::get_response',
   async (payload: { messages: Record<string, any> } & Record<string, any>) => {
