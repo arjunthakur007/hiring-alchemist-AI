@@ -47,7 +47,7 @@ export PORT="3000"
 sudo npm install -g pm2
 
 # Run PM2 directly as the ubuntu user inside the correct folder with environment variables
-sudo -u ubuntu env INFERENCE_WORKER_URL="PYTHON_PRIVATE_IP_PLACEHOLDER:50051" PORT="3000" pm2 start npm --name "caller-worker" --cwd /home/ubuntu/hiring-alchemist-AI/may-2026/devops/quickstart/workers/caller-worker -- start
+sudo -u ubuntu env INFERENCE_WORKER_URL="PYTHON_PRIVATE_IP_PLACEHOLDER:50051" PORT="3000" pm2 start npm --name "caller-worker" --cwd /home/ubuntu/hiring-alchemist-AI/may-2026/devops/quickstart/workers/caller-worker -- run dev
 
 # Configure PM2 to boot automatically if the VM restarts and save the state
 sudo env PATH=$PATH:/usr/bin /usr/lib/node_modules/pm2/bin/pm2 startup systemd -u ubuntu --hp /home/ubuntu
